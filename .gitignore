@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+ds/
+ds_old/
+*.npz
+*.parquet
+*.xml
+*.csv
+*.pkl
+*.gzip
+*.mp4
+*.pl3container

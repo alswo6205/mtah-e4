@@ -1,0 +1,23 @@
+{
+ "sw": 4,
+ "dd": 10,
+ "beta": 0.5,
+ "epochs_trained": 20,
+ "train_matches": [
+  "J03WMX",
+  "J03WN1",
+  "J03WOH",
+  "J03WOY",
+  "J03WPY",
+  "J03WQQ",
+  "J03WR9"
+ ],
+ "ball_noise": {
+  "alive_missing": 0.32,
+  "dead_missing": 0.75,
+  "alive_gap_s": 0.6,
+  "air_hide": 0.9,
+  "crowd_start": 0.08,
+  "crowd_gap_s": 1.0
+ }
+}
