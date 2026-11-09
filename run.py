@@ -26,6 +26,7 @@ PITCH = (105.3, 68.0)
 HALVES_VIDEO = {1: (11185, 90651), 2: (110808, 190197)}   # games.py 의 halves(IdFrame) - offsets
 SW, DD, BETA = 4.0, 10.0, 1.0   # params.json 이 있으면 그 값으로 덮어씀
 T, STEP, NMAX = 50, 5, 26
+VMAX = 12.0   # m/s, 0.2초 사이 이보다 빠르면 같은 사람이 아니라고 봄 (전력질주 ~10 m/s)
 
 
 class Net(nn.Module):
@@ -81,6 +82,7 @@ def half_features(X, Y, BX, BY, team):
     for j in range(X.shape[1]):
         x, y = X[idx, j], Y[idx, j]
         vx = (X[idx, j] - X[prev, j]) / 0.2; vy = (Y[idx, j] - Y[prev, j]) / 0.2
+        jump = np.hypot(vx, vy) > VMAX; vx[jump] = vy[jump] = np.nan   # 슬롯 신원 바뀜: 연결 끊고 속도 모름으로
         vk = ~np.isnan(vx); vx = np.nan_to_num(vx); vy = np.nan_to_num(vy)
         rows = np.flatnonzero(~np.isnan(x)); rows = rows[cnt[rows] < NMAX]; c = cnt[rows]
         dx = np.where(bv[rows], x[rows] - bx[rows], 0); dy = np.where(bv[rows], y[rows] - by[rows], 0)
