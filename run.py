@@ -11,7 +11,7 @@
   2. raw ATD 를 한 줄씩 읽어 선수·공 위치(0~1)를 배열로, 미터로 변환 (105.3 x 68.0)
   3. 하프마다: 왼쪽 팀 정하기 -> 5 fps 로 줄이기 -> 선수 토큰 10개 특징 + 공 3개 특징 (학습 때와 똑같이)
   4. 모델 예측 (10초 창, 5초 간격으로 겹쳐서 평균)
-  5. Viterbi (전환 비용 4, dead 비용 10, 전환 확률 반영 1 : 검증 경기로 고른 값)
+  5. Viterbi (전환 비용 4, dead 비용 10, 전환 확률 반영 0.5 : params.json, 검증 경기로 고른 값)
   6. 25 fps 로 펼쳐 H/A/D, 하프 밖은 X -> CSV
   7. (--score) 공개 5분 정답으로 채점
 """
@@ -153,7 +153,7 @@ def main():
         sl = slice(s, e + 1)
         feat, mask, ball, home_left = half_features(X[sl], Y[sl], BX[sl], BY[sl], team)
         lp, bl = predict(model, feat, mask, ball); lab5 = viterbi(lp, bl)
-        pos = np.minimum(np.arange(e + 1 - s) // STEP, len(lab5) - 1); lab = lab5[pos]
+        pos = np.minimum((np.arange(e + 1 - s) + STEP // 2) // STEP, len(lab5) - 1); lab = lab5[pos]   # 가장 가까운 5fps 스텝 (앞 스텝만 쓰면 최대 0.16초 늦음)
         left, right = ("H", "A") if home_left else ("A", "H")
         labels[sl] = np.where(lab == 0, left, np.where(lab == 1, right, "D"))
         print(f"[3-6] {h}반 완료: 5fps {len(lab5)}스텝, 홈팀 {'왼쪽' if home_left else '오른쪽'} 시작, {time.time()-t0:.0f}s", flush=True)
